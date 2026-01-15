@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Mail, Lock, Chrome, Apple, Facebook } from 'lucide-react';
+import { Chrome, Apple, Facebook } from 'lucide-react';
 
 const LoginPage = () => {
   const { register, handleSubmit } = useForm();
@@ -9,7 +9,6 @@ const LoginPage = () => {
 
   const onSubmit = (data: any) => {
     console.log(data);
-    // For prototype, just navigate to hq dashboard
     if (data.email.includes('hq')) {
       navigate('/hq/dashboard');
     } else {
@@ -18,147 +17,140 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--surface)' }}>
-      {/* Left decoration (Zoom style) */}
-      <div style={{ 
-        flex: 1, 
-        backgroundColor: '#00053D', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        padding: '4rem',
-        color: 'white',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ zIndex: 1, textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)' }}>
+    <div className="min-h-screen bg-white flex">
+      {/* Left Side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0e4d92] to-[#1c5fa8] relative overflow-hidden items-center justify-center p-16">
+        <div className="relative z-10 text-center max-w-xl">
+          <div className="mb-8">
+            <h1 className="text-white text-5xl font-bold mb-4 tracking-tight">Doldari</h1>
+            <div className="w-20 h-1 bg-blue-400/50 mx-auto rounded-full"></div>
+          </div>
+          <h2 className="text-white text-3xl font-semibold mb-4 leading-tight">
             더 투명하고 안전한<br />가맹계약의 시작
           </h2>
-          <p style={{ fontSize: '1.1rem', color: '#CBD5E1', marginBottom: '3rem' }}>
-            화상 미팅과 전자계약이 결합된 상생 관리 ERP
+          <p className="text-blue-100 text-lg leading-relaxed">
+            화상 미팅과 전자계약이 결합된<br />상생 관리 ERP
           </p>
-          <div style={{ 
-            width: '100%', 
-            maxWidth: '500px', 
-            height: '300px', 
-            backgroundColor: 'rgba(255,255,255,0.05)', 
-            borderRadius: 'var(--radius-xl)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            fontSize: '4rem'
-          }}>
-            🤝
-          </div>
         </div>
-        {/* Decorative blobs */}
-        <div style={{ 
-          position: 'absolute', 
-          top: '-10%', 
-          right: '-10%', 
-          width: '400px', 
-          height: '400px', 
-          background: 'radial-gradient(circle, rgba(11,92,255,0.2) 0%, transparent 70%)',
-          borderRadius: '50%'
-        }} />
+        
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
       </div>
 
-      {/* Right Login Form */}
-      <div style={{ 
-        width: '500px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center', 
-        padding: '4rem' 
-      }}>
-        <div style={{ marginBottom: '3rem' }}>
-          <h1 style={{ color: 'var(--primary)', fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Doldari</h1>
-          <p style={{ color: 'var(--text-muted)' }}>가맹계약의 튼튼한 돌다리가 되어드립니다.</p>
-        </div>
-
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>로그인</h2>
-
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div style={{ position: 'relative' }}>
-            <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input 
-              {...register('email')}
-              type="email" 
-              placeholder="이메일 주소" 
-              style={{ 
-                width: '100%', 
-                padding: '0.875rem 1rem 0.875rem 3rem', 
-                borderRadius: 'var(--radius)', 
-                border: '1px solid var(--border)',
-                backgroundColor: 'var(--background)'
-              }} 
-            />
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50/50">
+        <div className="w-full max-w-md">
+          {/* Logo for mobile */}
+          <div className="lg:hidden text-center mb-8">
+            <h1 className="text-primary text-3xl font-bold">Doldari</h1>
           </div>
-          <div style={{ position: 'relative' }}>
-            <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input 
-              {...register('password')}
-              type="password" 
-              placeholder="비밀번호" 
-              style={{ 
-                width: '100%', 
-                padding: '0.875rem 1rem 0.875rem 3rem', 
-                borderRadius: 'var(--radius)', 
-                border: '1px solid var(--border)',
-                backgroundColor: 'var(--background)'
-              }} 
-            />
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">로그인</h2>
+              <p className="text-sm text-gray-500">계정에 로그인하세요</p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  이메일 주소
+                </label>
+                <input
+                  {...register('email')}
+                  id="email"
+                  type="email"
+                  placeholder="이메일을 입력하세요"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                           transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  비밀번호
+                </label>
+                <input
+                  {...register('password')}
+                  id="password"
+                  type="password"
+                  placeholder="비밀번호를 입력하세요"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                           transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center cursor-pointer group">
+                  <input type="checkbox" className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500" />
+                  <span className="ml-2 text-gray-600 group-hover:text-gray-900">로그인 상태 유지</span>
+                </label>
+                <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
+                  비밀번호 찾기
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg
+                         transition-colors shadow-sm hover:shadow focus:outline-none focus:ring-2 
+                         focus:ring-blue-500 focus:ring-offset-2"
+              >
+                로그인
+              </button>
+            </form>
+
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-4 text-xs text-gray-500 bg-white">또는 다음으로 로그인</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                <SocialButton icon={<Chrome className="w-5 h-5" />} label="Google" />
+                <SocialButton icon={<Apple className="w-5 h-5" />} label="Apple" />
+                <SocialButton icon={<Facebook className="w-5 h-5 text-blue-600" />} label="Facebook" />
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-600">
+                계정이 없으신가요?{' '}
+                <a href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+                  무료로 가입하기
+                </a>
+              </p>
+            </div>
           </div>
-          <button 
-            type="submit" 
-            style={{ 
-              backgroundColor: 'var(--primary)', 
-              color: 'white', 
-              padding: '0.875rem', 
-              borderRadius: 'var(--radius)', 
-              fontWeight: 600,
-              marginTop: '0.5rem'
-            }}
-          >
-            로그인
-          </button>
-        </form>
 
-        <div style={{ margin: '2rem 0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)' }} />
-          <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>또는</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)' }} />
+          <div className="mt-8 text-center text-xs text-gray-500 space-x-4">
+            <a href="#" className="hover:text-gray-700">도움말</a>
+            <span>·</span>
+            <a href="#" className="hover:text-gray-700">약관</a>
+            <span>·</span>
+            <a href="#" className="hover:text-gray-700">개인정보 처리방침</a>
+          </div>
         </div>
-
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <SocialButton icon={<Chrome size={20} />} label="Google" />
-          <SocialButton icon={<Apple size={20} />} label="Apple" />
-          <SocialButton icon={<Facebook size={20} />} label="Facebook" />
-        </div>
-
-        <p style={{ marginTop: '3rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-          계정이 없으신가요? <a href="/signup" style={{ color: 'var(--primary)', fontWeight: 600 }}>무료로 가입하기</a>
-        </p>
       </div>
     </div>
   );
 };
 
-const SocialButton = ({ icon, label }: { icon: React.ReactNode, label: string }) => (
-  <button style={{ 
-    width: '3rem', 
-    height: '3rem', 
-    borderRadius: '50%', 
-    border: '1px solid var(--border)', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    backgroundColor: 'white'
-  }}>
-    {icon}
+const SocialButton = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
+  <button
+    type="button"
+    className="flex flex-col items-center justify-center gap-2 p-3 border border-gray-200 
+             rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all group"
+  >
+    <div className="text-gray-600 group-hover:text-gray-900">{icon}</div>
+    <span className="text-xs text-gray-500 group-hover:text-gray-700">{label}</span>
   </button>
 );
 
