@@ -14,6 +14,7 @@ import {
   Video,
   FileDown
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ContractManage = () => {
   return (
@@ -106,17 +107,20 @@ const ContractManage = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               <ContractRow 
+                id="CTR-001"
                 title="강남역점 가맹 계약서 (2024년 갱신)" 
                 label="중요"
                 status="completed" 
                 date="2024.03.15 14:30" 
               />
               <ContractRow 
+                id="CTR-002"
                 title="개인정보 처리 방침 동의서" 
                 status="completed" 
                 date="2024.03.15 14:35" 
               />
               <ContractRow 
+                id="CTR-003"
                 title="운영 매뉴얼 준수 서약서" 
                 status="completed" 
                 date="2024.03.15 14:40" 
@@ -151,7 +155,8 @@ const ContractManage = () => {
   );
 };
 
-const ContractRow = ({ title, label, status, date }: any) => {
+const ContractRow = ({ id, title, label, status, date }: any) => {
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -177,19 +182,28 @@ const ContractRow = ({ title, label, status, date }: any) => {
     };
   }, []);
 
-  const handleDocumentClick = () => {
-    alert(`[${title}] 문서 상세보기를 엽니다.`);
+  const handleRowClick = () => {
+    navigate(`/franchisee/contract/${id}`);
+  };
+
+  const handleDocumentClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Stop row click propagation
+    // For specific document view, maybe open detail too or open modal
+    handleRowClick(); 
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors group">
-      <td className="py-4 pl-6 pr-4 align-top">
+    <tr 
+      className="hover:bg-gray-50 transition-colors group cursor-pointer"
+      onClick={handleRowClick}
+    >
+      <td className="py-4 pl-6 pr-4 align-top" onClick={e => e.stopPropagation()}>
          <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mt-1" />
       </td>
       <td className="py-4 px-4 align-top">
         <div className="flex flex-col">
           <div className="flex items-center gap-2 mb-1">
-             <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors cursor-pointer" onClick={handleDocumentClick}>
+             <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
                {title}
              </span>
              {label && (
@@ -200,11 +214,8 @@ const ContractRow = ({ title, label, status, date }: any) => {
                </span>
              )}
           </div>
-          <div 
-            className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer hover:text-blue-600 transition-colors w-fit"
-            onClick={handleDocumentClick}
-          >
-            <div className="p-1 rounded hover:bg-blue-50">
+          <div className="flex items-center gap-2 text-xs text-gray-400 group-hover:text-blue-500 transition-colors w-fit">
+            <div className="p-1 rounded bg-gray-100 group-hover:bg-blue-50">
                <FileText className="w-3 h-3" />
             </div>
             <span>PDF 문서</span>
@@ -225,7 +236,7 @@ const ContractRow = ({ title, label, status, date }: any) => {
            )}
         </span>
       </td>
-      <td className="py-4 pr-6 align-top text-right">
+      <td className="py-4 pr-6 align-top text-right" onClick={e => e.stopPropagation()}>
         {/* Action Button & Dropdown */}
         <div className="relative inline-block text-left" ref={dropdownRef}>
           <button 

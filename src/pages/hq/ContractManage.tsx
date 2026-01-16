@@ -5,7 +5,6 @@ import {
   FileText, 
   CheckCircle2, 
   Clock, 
-  AlertCircle,
   ChevronDown,
   Download,
   Bell,
@@ -16,6 +15,7 @@ import {
   Video,
   FileDown
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ContractManage = () => {
   return (
@@ -87,7 +87,6 @@ const ContractManage = () => {
           
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-2">
-               {/* Group Filter Removed based on feedback 'No shared docs' */}
                <span className="text-sm text-gray-500">총 <strong className="text-gray-900">5</strong>건의 문서가 있습니다.</span>
             </div>
             <button className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1">
@@ -114,6 +113,7 @@ const ContractManage = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               <ContractRow 
+                id="CTR-001"
                 title="강남역점 가맹 계약서 (2024년 갱신)" 
                 label="중요"
                 store="강남역점" 
@@ -122,6 +122,7 @@ const ContractManage = () => {
                 date="2024.03.15 14:30" 
               />
               <ContractRow 
+                id="CTR-002"
                 title="성수점 임대차 계약 확인서" 
                 store="성수점" 
                 owner="이영희"
@@ -129,6 +130,7 @@ const ContractManage = () => {
                 date="2024.03.18 09:15" 
               />
               <ContractRow 
+                id="CTR-003"
                 title="홍대점 정보공개서(갱신) 열람 확인" 
                 label="검토필요"
                 store="홍대점" 
@@ -137,6 +139,7 @@ const ContractManage = () => {
                 date="2024.03.12 11:20" 
               />
               <ContractRow 
+                id="CTR-004"
                 title="부산 서면점 신규 가맹 계약서" 
                 store="부산서면점" 
                 owner="최지우"
@@ -144,6 +147,7 @@ const ContractManage = () => {
                 date="2024.03.20 16:45" 
               />
               <ContractRow 
+                id="CTR-005"
                 title="대구 동성로점 운영 매뉴얼 준수 서약서" 
                 store="대구동성로점" 
                 owner="김민수"
@@ -181,7 +185,8 @@ const ContractManage = () => {
   );
 };
 
-const ContractRow = ({ title, label, store, owner, status, date }: any) => {
+const ContractRow = ({ id, title, label, store, owner, status, date }: any) => {
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -207,19 +212,22 @@ const ContractRow = ({ title, label, store, owner, status, date }: any) => {
     };
   }, []);
 
-  const handleDocumentClick = () => {
-    alert(`[${title}] 문서 상세보기를 엽니다.`);
+  const handleRowClick = () => {
+    navigate(`/hq/contract/manage/${id}`);
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors group">
-      <td className="py-4 pl-6 pr-4 align-top">
+    <tr 
+      className="hover:bg-gray-50 transition-colors group cursor-pointer" 
+      onClick={handleRowClick}
+    >
+      <td className="py-4 pl-6 pr-4 align-top" onClick={e => e.stopPropagation()}>
          <input type="checkbox" className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mt-1" />
       </td>
       <td className="py-4 px-4 align-top">
         <div className="flex flex-col">
           <div className="flex items-center gap-2 mb-1">
-             <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors cursor-pointer" onClick={handleDocumentClick}>
+             <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
                {title}
              </span>
              {label && (
@@ -230,12 +238,8 @@ const ContractRow = ({ title, label, store, owner, status, date }: any) => {
                </span>
              )}
           </div>
-          <div 
-            className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer hover:text-blue-600 transition-colors w-fit"
-            onClick={handleDocumentClick}
-            title="계약서 파일 상세보기"
-          >
-            <div className="p-1 rounded hover:bg-blue-50">
+          <div className="flex items-center gap-2 text-xs text-gray-400 group-hover:text-blue-500 transition-colors w-fit">
+            <div className="p-1 rounded bg-gray-100 group-hover:bg-blue-50">
                <FileText className="w-3 h-3" />
             </div>
             <span>PDF 문서</span>
@@ -260,7 +264,7 @@ const ContractRow = ({ title, label, store, owner, status, date }: any) => {
            )}
         </span>
       </td>
-      <td className="py-4 pr-6 align-top text-right">
+      <td className="py-4 pr-6 align-top text-right" onClick={e => e.stopPropagation()}>
         {/* Action Button & Dropdown */}
         <div className="relative inline-block text-left" ref={dropdownRef}>
           <button 

@@ -12,6 +12,7 @@ import FranchiseeMeetingList from './pages/franchisee/MeetingList';
 import FranchiseeContractManage from './pages/franchisee/ContractManage';
 import DisclosureList from './pages/franchisee/DisclosureList';
 import NoticeList from './pages/NoticeList';
+import ContractDetail from './pages/ContractDetail';
 import MeetingRoom from './pages/MeetingRoom';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="dashboard" element={<HQDashboard />} />
         <Route path="contract/request" element={<ContractRequest />} />
         <Route path="contract/manage" element={<ContractManage />} />
+        <Route path="contract/manage/:id" element={<ContractDetail />} />
         <Route path="meeting" element={<MeetingList />} />
         {/* URL 매챙이 안 되면 사이드바에 추가해야 함. 현재 사이드바에는 없음. 일단 라우트만 등록 */}
         <Route path="disclosure/manage" element={<DisclosureManage />} />
@@ -39,6 +41,7 @@ function App() {
         <Route path="dashboard" element={<FranchiseeDashboard />} />
         <Route path="meeting" element={<FranchiseeMeetingList />} />
         <Route path="contract" element={<FranchiseeContractManage />} />
+        <Route path="contract/:id" element={<ContractDetail />} />
         <Route path="disclosure" element={<DisclosureList />} />
         <Route path="notice" element={<NoticeList />} />
       </Route>
