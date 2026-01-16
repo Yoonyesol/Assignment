@@ -1,215 +1,512 @@
 import React, { useState } from 'react';
-import { Upload, UserPlus, FileText, CheckCircle2, ChevronRight, AlertTriangle, ShieldCheck, User } from 'lucide-react';
+import { 
+  Upload, 
+  FileText, 
+  CheckCircle2, 
+  ChevronRight, 
+  AlertTriangle, 
+  ShieldCheck, 
+  User,
+  UserPlus,
+  X,
+  ChevronLeft,
+  Play
+} from 'lucide-react';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
-const steps = ['문서 업로드', '참여자 지정', '설정 및 분석', '발송 완료'];
+const steps = ['계약서 업로드', '설정 및 분석', '발송 완료'];
 
 const ContractRequest = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAIAnalyzing, setIsAIAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState<any>(null);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleNext = () => {
+    // If getting ready to send (end of step 1), show confirm modal
     if (currentStep === 1) {
-      startAIAnalysis();
+      setShowConfirmModal(true);
+    } else {
+      setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
     }
-    setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
+  };
+
+  const handleConfirmSend = () => {
+    setShowConfirmModal(false);
+    // Move to completion step
+    setCurrentStep(2);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      setUploadedFile(file);
+    }
   };
 
   const startAIAnalysis = () => {
     setIsAIAnalyzing(true);
+    setShowAIPanel(true);
+    
+    // Simulate AI analysis
     setTimeout(() => {
       setIsAIAnalyzing(false);
       setAiResult({
         riskCount: 2,
         safeCount: 15,
         risks: [
-          { title: '위약금 과다 산정 가능성', description: '제 15조 2항의 위약금 산정 방식이 최근 판례 기준보다 높게 설정되어 있습니다.', severity: 'medium' },
-          { title: '영업지역 침해 모호', description: '영업지역 보호 범위가 구체적인 도면 없이 주소지로만 되어 있어 분쟁 소지가 있습니다.', severity: 'high' }
+          { 
+            title: '위약금 과다 산정 가능성', 
+            description: '제 15조 2항의 위약금 산정 방식이 최근 판례 기준보다 높게 설정되어 있습니다.', 
+            severity: 'medium' 
+          },
+          { 
+            title: '영업지역 침해 모호', 
+            description: '영업지역 보호 범위가 구체적인 도면 없이 주소지로만 되어 있어 분쟁 소지가 있습니다.', 
+            severity: 'high' 
+          }
         ]
       });
-    }, 2000);
+    }, 3000);
   };
 
+
+
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-      <header style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontSize: '1.875rem', marginBottom: '1.5rem' }}>새로운 계약 요청</h1>
+    <div className="h-full flex flex-col">
+      <ConfirmModal 
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSend}
+        title="계약서를 전송하시겠습니까?"
+        description={`작성자: 김철수 (본사)\n수신자: 홍길동 (점주)\n\n전송 후에는 내용을 수정할 수 없습니다.`}
+        confirmText="전송하기"
+        cancelText="취소"
+        variant="primary"
+      />
+      <header className="mb-6 flex-shrink-0">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">새로운 계약 요청</h1>
+        
         {/* Stepper */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="flex items-center gap-4">
           {steps.map((step, index) => (
             <React.Fragment key={step}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ 
-                  width: '24px', 
-                  height: '24px', 
-                  borderRadius: '50%', 
-                  backgroundColor: index <= currentStep ? 'var(--primary)' : 'var(--border)', 
-                  color: 'white', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 600
-                }}>
-                  {index < currentStep ? <CheckCircle2 size={16} /> : index + 1}
+              <div className="flex items-center gap-2">
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
+                  ${index <= currentStep 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 text-gray-500'}
+                `}>
+                  {index < currentStep ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
                 </div>
-                <span style={{ fontSize: '0.875rem', fontWeight: index === currentStep ? 600 : 400, color: index <= currentStep ? 'var(--text-main)' : 'var(--text-muted)' }}>{step}</span>
+                <span className={`text-sm font-medium ${
+                  index === currentStep ? 'text-gray-900' : 'text-gray-500'
+                }`}>
+                  {step}
+                </span>
               </div>
-              {index < steps.length - 1 && <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border)', minWidth: '40px' }} />}
+              {index < steps.length - 1 && (
+                <div className="flex-1 h-px bg-gray-200 min-w-[40px]" />
+              )}
             </React.Fragment>
           ))}
         </div>
       </header>
 
-      <div style={{ backgroundColor: 'var(--surface)', borderRadius: 'var(--radius-xl)', padding: '2.5rem', boxShadow: 'var(--shadow)', border: '1px solid var(--border)', minHeight: '500px' }}>
+      {/* Main Content */}
+      <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+        {/* Step 0: Upload */}
         {currentStep === 0 && (
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <div style={{ width: '80px', height: '80px', backgroundColor: 'var(--primary-light)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>
-              <Upload size={32} />
-            </div>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>계약서(PDF) 업로드</h2>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>서명이 필요한 계약서 파일을 드래그하여 놓거나 클릭하여 선택하세요.</p>
-            <button 
-              onClick={handleNext}
-              style={{ padding: '0.875rem 2.5rem', borderRadius: 'var(--radius)', backgroundColor: 'var(--primary)', color: 'white', fontWeight: 600 }}
-            >
-              파일 선택하기
-            </button>
-          </div>
-        )}
-
-        {currentStep === 1 && (
-          <div>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>참여자 정보 입력</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <SignerInput label="작성자 (본사)" name="김철수" email="chulsoo@franchise.com" isMe />
-              <div style={{ height: '20px', position: 'relative', margin: '0.5rem 0' }}>
-                <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '50%', backgroundColor: 'var(--surface)', padding: '0 1rem', zIndex: 1, fontSize: '0.75rem', color: 'var(--text-muted)' }}>서명 참여자 추가</div>
-                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: 'var(--border)' }} />
-              </div>
-              <SignerInput label="수신자 (점주)" name="홍길동" email="hong@gmail.com" />
-              <button style={{ alignSelf: 'center', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', backgroundColor: 'transparent' }}>
-                <UserPlus size={18} />
-                <span>참여자 추가하기</span>
-              </button>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '3rem' }}>
-              <button onClick={handleNext} style={{ padding: '0.875rem 2.5rem', borderRadius: 'var(--radius)', backgroundColor: 'var(--primary)', color: 'white', fontWeight: 600 }}>
-                다음 단계로
-              </button>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 2 && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
-            <div style={{ backgroundColor: 'var(--background)', borderRadius: 'var(--radius)', height: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
-                <FileText size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
-                <p>계약서 미리보기 영역</p>
-                <p style={{ fontSize: '0.875rem' }}>(서명 위치 지정 가능)</p>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ backgroundColor: 'var(--primary-light)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid rgba(11,92,255,0.2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', marginBottom: '1rem' }}>
-                  <ShieldCheck size={20} />
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>AI 법률 위험 분석</h3>
+          <div className="p-8 overflow-y-auto">
+            {/* File Upload Area */}
+            {!uploadedFile ? (
+              <div className="text-center py-16">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Upload className="w-10 h-10 text-blue-600" />
                 </div>
-                {isAIAnalyzing ? (
-                  <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-                    <div style={{ border: '2px solid var(--primary)', borderTopColor: 'transparent', width: '24px', height: '24px', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 1rem' }} />
-                    <p style={{ fontSize: '0.875rem' }}>계약 조항 분석 중...</p>
-                  </div>
-                ) : aiResult ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <div style={{ flex: 1, backgroundColor: 'white', padding: '0.75rem', borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--danger)' }}>{aiResult.riskCount}</div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>주의 조항</div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">계약서(PDF) 업로드</h2>
+                <p className="text-gray-600 mb-8">
+                  서명이 필요한 계약서 파일을 드래그하여 놓거나 클릭하여 선택하세요.
+                </p>
+                <label className="inline-block">
+                  <input 
+                    type="file" 
+                    accept=".pdf"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <span className="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 
+                                 transition-colors cursor-pointer inline-block">
+                    파일 선택하기
+                  </span>
+                </label>
+              </div>
+            ) : (
+              <div className="py-8">
+                <div className="max-w-2xl mx-auto">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-6 h-6 text-green-600" />
                       </div>
-                      <div style={{ flex: 1, backgroundColor: 'white', padding: '0.75rem', borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--success)' }}>{aiResult.safeCount}</div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>안전 조항</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CheckCircle2 className="w-5 h-5 text-green-600" />
+                          <h3 className="text-lg font-semibold text-gray-900">업로드 완료</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{uploadedFile.name}</p>
+                        <p className="text-xs text-gray-500">
+                          {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setUploadedFile(null)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI Analysis Button - Redesigned */}
+            {uploadedFile && !isAIAnalyzing && !aiResult && (
+              <div className="mt-8 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-8 transition-all hover:shadow-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-5 items-center">
+                    <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center flex-shrink-0">
+                      <ShieldCheck className="w-8 h-8 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+                        AI 법률 위험 분석
+                        <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-medium">BETA</span>
+                      </h3>
+                      <p className="text-gray-600 mb-2">
+                        계약서 내의 <span className="font-semibold text-gray-900">독소 조항</span>과 <span className="font-semibold text-gray-900">법적 위험 요소</span>를 AI가 즉시 분석해드립니다.
+                      </p>
+                      <div className="flex gap-4 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">✨ 30초 만에 분석 완료</span>
+                        <span className="flex items-center gap-1">⚖️ 최신 법령 기준</span>
                       </div>
                     </div>
-                    {aiResult.risks.map((risk: any, i: number) => (
-                      <div key={i} style={{ backgroundColor: 'white', padding: '0.75rem', borderRadius: 'var(--radius-sm)', borderLeft: `3px solid ${risk.severity === 'high' ? 'var(--danger)' : 'var(--warning)'}` }}>
-                        <div style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <AlertTriangle size={14} color={risk.severity === 'high' ? 'var(--danger)' : 'var(--warning)'} />
-                          {risk.title}
-                        </div>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{risk.description}</p>
-                      </div>
-                    ))}
                   </div>
-                ) : null}
+                  <button
+                    onClick={startAIAnalysis}
+                    className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg shadow-sm
+                             hover:bg-purple-700 transition-all flex items-center gap-2"
+                  >
+                    <Play className="w-4 h-4 fill-current" />
+                    AI 분석 시작
+                  </button>
+                </div>
               </div>
+            )}
 
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem', fontWeight: 600 }}>최종 설정</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ fontSize: '0.875rem', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>화상 미팅 필수</span>
-                    <input type="checkbox" defaultChecked />
-                  </div>
-                  <div style={{ fontSize: '0.875rem', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>서명 후 자동 메일 발송</span>
-                    <input type="checkbox" defaultChecked />
+            {/* AI Analysis Progress */}
+            {isAIAnalyzing && (
+              <div className="border-t border-gray-200 pt-8">
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">AI 분석 진행 중...</h3>
+                      <p className="text-sm text-gray-600">계약서의 조항들을 분석하고 있습니다</p>
+                      <div className="mt-3 bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div className="h-full bg-purple-600 rounded-full animate-pulse" style={{ width: '60%' }} />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+            )}
 
-              <button 
-                onClick={handleNext}
-                style={{ width: '100%', padding: '1rem', borderRadius: 'var(--radius)', backgroundColor: 'var(--primary)', color: 'white', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-              >
-                계약서 전송하기
-                <ChevronRight size={18} />
-              </button>
-            </div>
+            {/* AI Analysis Complete */}
+            {aiResult && (
+              <div className="border-t border-gray-200 pt-8">
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                  <div className="flex items-center gap-2 text-purple-700 mb-4">
+                    <ShieldCheck className="w-5 h-5" />
+                    <h3 className="font-semibold">AI 분석 완료</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-white rounded-lg p-4 text-center">
+                      <div className="text-3xl font-bold text-red-600">{aiResult.riskCount}</div>
+                      <div className="text-sm text-gray-600">주의 조항</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 text-center">
+                      <div className="text-3xl font-bold text-green-600">{aiResult.safeCount}</div>
+                      <div className="text-sm text-gray-600">안전 조항</div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    다음 단계에서 상세한 분석 결과를 확인할 수 있습니다.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom Navigation */}
+            {uploadedFile && (
+              <div className="flex justify-end pt-6 border-t border-gray-200">
+                <button
+                  onClick={handleNext}
+                  className="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 
+                           transition-colors flex items-center gap-2"
+                >
+                  다음 단계로
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         )}
 
-        {currentStep === 3 && (
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(16,185,129,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--success)' }}>
-              <CheckCircle2 size={40} />
+        {/* Step 1: Setup & Analysis */}
+        {currentStep === 1 && (
+          <div className="flex-1 flex overflow-hidden">
+            {/* Left: Participants */}
+            {isLeftPanelOpen && (
+              <div className="w-[280px] border-r border-gray-200 bg-white flex flex-col">
+                <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                  <h3 className="text-sm font-semibold text-gray-900">참여자 지정</h3>
+                  <button onClick={() => setIsLeftPanelOpen(false)} className="p-1 hover:bg-gray-100 rounded">
+                    <ChevronLeft className="w-4 h-4 text-gray-500" />
+                  </button>
+                </div>
+                <div className="p-4 space-y-4 overflow-y-auto">
+                  <ParticipantCard 
+                    label="작성자 (본사)" 
+                    name="김철수" 
+                    email="chulsoo@franchise.com" 
+                    isMe 
+                  />
+                  
+                  <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-white px-2 text-xs text-gray-500">서명자</span>
+                    </div>
+                  </div>
+                  
+                  <ParticipantCard 
+                    label="수신자 (점주)" 
+                    name="홍길동" 
+                    email="hong@gmail.com" 
+                  />
+                  
+                  <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed 
+                                   border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 
+                                   transition-colors text-sm font-medium">
+                    <UserPlus className="w-4 h-4" />
+                    참여자 추가
+                  </button>
+                </div>
+
+                {/* Bottom Settings in Left Panel */}
+                <div className="mt-auto p-4 border-t border-gray-200 bg-gray-50">
+                   <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">계약 설정</h3>
+                   <div className="space-y-3">
+                    <label className="flex items-center justify-between cursor-pointer">
+                      <span className="text-sm text-gray-700">화상 미팅 필수</span>
+                      <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded" />
+                    </label>
+                    <label className="flex items-center justify-between cursor-pointer">
+                      <span className="text-sm text-gray-700">자동 메일 발송</span>
+                      <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded" />
+                    </label>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Left Panel Toggle (When Closed) */}
+            {!isLeftPanelOpen && (
+               <div className="w-10 border-r border-gray-200 bg-gray-50 flex flex-col items-center py-4">
+                 <button 
+                  onClick={() => setIsLeftPanelOpen(true)}
+                  className="p-2 hover:bg-gray-200 rounded mb-4"
+                  title="참여자 패널 열기"
+                >
+                   <ChevronRight className="w-5 h-5 text-gray-600" />
+                 </button>
+                 <div className="writing-vertical text-xs text-gray-500 font-medium tracking-wider">참여자 및 설정</div>
+               </div>
+            )}
+
+            {/* Center: PDF Preview */}
+            <div className="flex-1 bg-gray-100 flex flex-col relative overflow-hidden">
+               {/* Toolbar */}
+              <div className="h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <FileText className="w-4 h-4" />
+                  <span className="text-sm font-medium">{uploadedFile?.name || '계약서.pdf'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                   {!showAIPanel && aiResult && (
+                    <button
+                      onClick={() => setShowAIPanel(true)}
+                      className="text-sm bg-purple-100 text-purple-700 px-3 py-1.5 rounded-md font-medium hover:bg-purple-200 transition-colors flex items-center gap-1"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      AI 분석 결과
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Preview Area */}
+              <div className="flex-1 overflow-auto p-8 flex items-center justify-center">
+                <div className="bg-white shadow-lg w-full max-w-4xl min-h-[800px] flex items-center justify-center relative">
+                  <div className="text-center text-gray-500">
+                    <p className="font-medium text-lg">PDF 미리보기</p>
+                    <p className="text-sm mt-1">이 영역은 PDF 렌더링 라이브러리로 대체됩니다</p>
+                  </div>
+                  
+                  {/* Floating Action Buttons */}
+                  <div className="absolute bottom-8 right-8 flex gap-4">
+                    <button
+                      onClick={() => setCurrentStep(0)}
+                      className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg shadow-sm hover:bg-gray-50"
+                    >
+                      이전
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      className="px-8 py-2.5 bg-blue-600 text-white font-medium rounded-lg shadow-lg hover:bg-blue-700 flex items-center gap-2"
+                    >
+                      전송하기
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>계약서 발송 완료!</h2>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem', maxWidth: '400px', margin: '0 auto 2.5rem' }}>
-              점주에게 계약 참여 링크가 발송되었습니다.<br />
-              점주가 링크를 통해 접속하면 미팅을 시작할 수 있습니다.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button style={{ padding: '0.875rem 2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', backgroundColor: 'white', fontWeight: 600 }}>계약 관리로 이동</button>
-              <button style={{ padding: '0.875rem 2rem', borderRadius: 'var(--radius)', backgroundColor: 'var(--primary)', color: 'white', fontWeight: 600 }}>미팅 링크 복사</button>
+
+            {/* Right: AI Analysis (Toggleable) */}
+            {showAIPanel && (
+              <div className="w-[320px] border-l border-gray-200 bg-white flex flex-col">
+                <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-purple-700">
+                    <ShieldCheck className="w-5 h-5" />
+                    <h3 className="font-semibold">AI 법률 위험 분석</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowAIPanel(false)}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  >
+                    <X className="w-4 h-4 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {aiResult && (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-red-50 rounded-lg p-3 text-center border border-red-100">
+                          <div className="text-2xl font-bold text-red-600">{aiResult.riskCount}</div>
+                          <div className="text-xs text-red-700 font-medium">주의 조항</div>
+                        </div>
+                        <div className="bg-green-50 rounded-lg p-3 text-center border border-green-100">
+                          <div className="text-2xl font-bold text-green-600">{aiResult.safeCount}</div>
+                          <div className="text-xs text-green-700 font-medium">안전 조항</div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        {aiResult.risks.map((risk: any, i: number) => (
+                          <div 
+                            key={i} 
+                            className={`rounded-lg p-3 border ${
+                              risk.severity === 'high' 
+                                ? 'bg-red-50 border-red-200' 
+                                : 'bg-yellow-50 border-yellow-200'
+                            }`}
+                          >
+                            <div className="flex items-start gap-2 mb-1">
+                              <AlertTriangle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
+                                risk.severity === 'high' ? 'text-red-600' : 'text-yellow-600'
+                              }`} />
+                              <div className={`text-sm font-bold ${
+                                risk.severity === 'high' ? 'text-red-900' : 'text-yellow-900'
+                              }`}>{risk.title}</div>
+                            </div>
+                            <p className={`text-xs ml-6 ${
+                              risk.severity === 'high' ? 'text-red-800' : 'text-yellow-800'
+                            }`}>{risk.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                        <p className="text-xs text-blue-800 leading-relaxed">
+                          💡 <strong>AI 조언:</strong> 전반적으로 표준 계약서 양식을 따르고 있으나, 위약금 조항 위주로 검토가 필요합니다.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 2: Complete */}
+        {currentStep === 2 && (
+          <div className="p-8 flex items-center justify-center flex-1">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-12 h-12 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">계약서 발송 완료!</h2>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                점주에게 계약 참여 링크가 발송되었습니다.<br />
+                점주가 링크를 통해 접속하면 미팅을 시작할 수 있습니다.
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50">
+                  계약 관리로 이동
+                </button>
+                <button className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700">
+                  미팅 링크 복사
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
-
       <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        .writing-vertical {
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
         }
       `}</style>
     </div>
   );
 };
 
-const SignerInput = ({ label, name, email, isMe }: any) => (
-  <div style={{ padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-    <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: isMe ? 'var(--primary-light)' : 'var(--background)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <User size={20} color={isMe ? 'var(--primary)' : 'var(--text-muted)'} />
-    </div>
-    <div style={{ flex: 1 }}>
-      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{label}</div>
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <input type="text" defaultValue={name} style={{ border: 'none', borderBottom: '1px solid var(--border)', padding: '0.25rem 0', fontWeight: 600, width: '150px' }} />
-        <input type="email" defaultValue={email} style={{ border: 'none', borderBottom: '1px solid var(--border)', padding: '0.25rem 0', color: 'var(--text-muted)', flex: 1 }} />
+const ParticipantCard = ({ label, name, email, isMe }: any) => (
+  <div className={`p-3 rounded-lg border ${isMe ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}>
+    <div className="flex items-center gap-3">
+      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+        isMe ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+      }`}>
+        <User className="w-5 h-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-xs text-gray-500 mb-1">{label}</div>
+        <div className="text-sm font-semibold text-gray-900 truncate">{name}</div>
+        <div className="text-xs text-gray-600 truncate">{email}</div>
       </div>
     </div>
   </div>
