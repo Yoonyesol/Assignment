@@ -2,13 +2,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Chrome, Apple, Facebook } from 'lucide-react';
+import { REGEX } from '../../constants/auth';
+
+interface LoginFormData {
+  email: string;
+  password: string;
+  remember: boolean;
+}
 
 const LoginPage = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
   const navigate = useNavigate();
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: LoginFormData) => {
     console.log(data);
+    // HQ email check logic maintained
     if (data.email.includes('hq')) {
       navigate('/hq/dashboard');
     } else {
@@ -17,7 +25,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="h-screen bg-white flex overflow-hidden">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0e4d92] to-[#1c5fa8] relative overflow-hidden items-center justify-center p-16">
         <div className="relative z-10 text-center max-w-xl">
@@ -39,8 +47,8 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50/50">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50/50 overflow-hidden">
+        <div className="w-full max-w-md h-full overflow-y-auto py-8">
           {/* Logo for mobile */}
           <div className="lg:hidden text-center mb-8">
             <h1 className="text-primary text-3xl font-bold">Doldari</h1>
@@ -58,7 +66,13 @@ const LoginPage = () => {
                   이메일 주소
                 </label>
                 <input
-                  {...register('email')}
+                  {...register('email', {
+                    required: '이메일을 입력하세요',
+                    pattern: {
+                      value: REGEX.EMAIL,
+                      message: '올바른 이메일 형식이 아닙니다'
+                    }
+                  })}
                   id="email"
                   type="email"
                   placeholder="이메일을 입력하세요"
@@ -66,6 +80,9 @@ const LoginPage = () => {
                            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                            transition-all placeholder:text-gray-400"
                 />
+                {errors.email && (
+                  <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+                )}
               </div>
 
               <div>
@@ -73,7 +90,9 @@ const LoginPage = () => {
                   비밀번호
                 </label>
                 <input
-                  {...register('password')}
+                  {...register('password', {
+                    required: '비밀번호를 입력하세요'
+                  })}
                   id="password"
                   type="password"
                   placeholder="비밀번호를 입력하세요"
@@ -81,6 +100,9 @@ const LoginPage = () => {
                            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                            transition-all placeholder:text-gray-400"
                 />
+                {errors.password && (
+                  <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between text-sm">
