@@ -6,7 +6,8 @@ import {
   Settings, 
   Video,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  BookOpen
 } from 'lucide-react';
 
 interface HQLayoutProps {
@@ -79,22 +80,37 @@ const HQLayout: React.FC<HQLayoutProps> = ({ isFranchisee = false }) => {
             {/* Franchisee menus */}
             {isFranchisee && (
               <>
-                <NavLink
-                  to="/franchisee/contracts"
+               <NavLink
+                  to="/franchisee/contract"
                   icon={<FileText className="w-5 h-5" />}
-                  label="내 계약"
-                  isActive={location.pathname === "/franchisee/contracts"}
+                  label="계약 관리"
+                  isActive={location.pathname === "/franchisee/contract"}
                 />
+              <NavLink
+                  to="/franchisee/disclosure"
+                  icon={<BookOpen className="w-5 h-5" />}
+                  label="정보공개서 확인"
+                  isActive={location.pathname === "/franchisee/disclosure"}
+                />
+                <NavLink
+                  to="/franchisee/meeting"
+                  icon={<Video className="w-5 h-5" />}
+                  label="온라인 미팅"
+                  isActive={location.pathname === "/franchisee/meeting"}
+                />
+               
               </>
             )}
 
-            {/* 온라인 미팅 */}
-            <NavLink
-              to={isFranchisee ? "/franchisee/meetings" : "/hq/meeting"}
-              icon={<Video className="w-5 h-5" />}
-              label="온라인 미팅"
-              isActive={location.pathname === (isFranchisee ? "/franchisee/meetings" : "/hq/meeting")}
-            />
+            {/* HQ Online Meeting */}
+            {!isFranchisee && (
+              <NavLink
+                to="/hq/meeting"
+                icon={<Video className="w-5 h-5" />}
+                label="온라인 미팅"
+                isActive={location.pathname === "/hq/meeting"}
+              />
+            )}
           </nav>
 
           {/* User Info & Logout */}
@@ -149,10 +165,7 @@ const HQLayout: React.FC<HQLayoutProps> = ({ isFranchisee = false }) => {
               </div>
             </div>
             
-            {/* Settings button */}
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Settings className="w-5 h-5 text-gray-600" />
-            </button>
+
           </div>
         </header>
 
