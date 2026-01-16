@@ -6,7 +6,6 @@ import {
   Settings, 
   Video,
   LogOut,
-  User,
   ChevronDown
 } from 'lucide-react';
 
@@ -100,19 +99,6 @@ const HQLayout: React.FC<HQLayoutProps> = ({ isFranchisee = false }) => {
 
           {/* User Info & Logout */}
           <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <User className="w-4 h-4 text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {isFranchisee ? '홍길동 점주' : '김철수 팀장'}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {isFranchisee ? '강남역점' : 'admin@doldari.com'}
-                </p>
-              </div>
-            </div>
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 
