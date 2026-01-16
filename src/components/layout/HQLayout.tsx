@@ -7,7 +7,8 @@ import {
   Video,
   LogOut,
   ChevronDown,
-  BookOpen
+  BookOpen,
+  Megaphone
 } from 'lucide-react';
 
 interface HQLayoutProps {
@@ -98,18 +99,31 @@ const HQLayout: React.FC<HQLayoutProps> = ({ isFranchisee = false }) => {
                   label="온라인 미팅"
                   isActive={location.pathname === "/franchisee/meeting"}
                 />
-               
+                <NavLink
+                  to="/franchisee/notice"
+                  icon={<Megaphone className="w-5 h-5" />}
+                  label="공지사항"
+                  isActive={location.pathname === "/franchisee/notice"}
+                />
               </>
             )}
 
-            {/* HQ Online Meeting */}
+            {/* HQ Online Meeting & Notice */}
             {!isFranchisee && (
-              <NavLink
-                to="/hq/meeting"
-                icon={<Video className="w-5 h-5" />}
-                label="온라인 미팅"
-                isActive={location.pathname === "/hq/meeting"}
-              />
+              <>
+                <NavLink
+                  to="/hq/meeting"
+                  icon={<Video className="w-5 h-5" />}
+                  label="온라인 미팅"
+                  isActive={location.pathname === "/hq/meeting"}
+                />
+                <NavLink
+                  to="/hq/notice"
+                  icon={<Megaphone className="w-5 h-5" />}
+                  label="공지사항"
+                  isActive={location.pathname === "/hq/notice"}
+                />
+              </>
             )}
           </nav>
 

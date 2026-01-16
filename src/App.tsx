@@ -11,6 +11,7 @@ import FranchiseeDashboard from './pages/franchisee/Dashboard';
 import FranchiseeMeetingList from './pages/franchisee/MeetingList';
 import FranchiseeContractManage from './pages/franchisee/ContractManage';
 import DisclosureList from './pages/franchisee/DisclosureList';
+import NoticeList from './pages/NoticeList';
 import MeetingRoom from './pages/MeetingRoom';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Route path="meeting" element={<MeetingList />} />
         {/* URL 매챙이 안 되면 사이드바에 추가해야 함. 현재 사이드바에는 없음. 일단 라우트만 등록 */}
         <Route path="disclosure/manage" element={<DisclosureManage />} />
+        <Route path="notice" element={<NoticeList />} />
       </Route>
 
       {/* Franchisee Routes */}
@@ -38,6 +40,7 @@ function App() {
         <Route path="meeting" element={<FranchiseeMeetingList />} />
         <Route path="contract" element={<FranchiseeContractManage />} />
         <Route path="disclosure" element={<DisclosureList />} />
+        <Route path="notice" element={<NoticeList />} />
       </Route>
 
       {/* Meeting Room - Full Screen */}
